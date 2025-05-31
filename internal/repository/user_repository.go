@@ -5,12 +5,14 @@ import (
 	"gorm.io/gorm"
 )
 
+//Análogo a uma classe privada
 type userRepository struct {
 	db *gorm.DB
 }
 
+//Análogo a uma interface
 func NewUserRepository(db *gorm.DB) UserRepository {
-	return &userRepository{db}
+	return &userRepository{db: db}
 }
 
 
