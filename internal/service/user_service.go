@@ -56,7 +56,7 @@ func (s *UserService) FindByID(id uint) (*domain.User, error) {
 	if id == 0 {
 		return nil, fmt.Errorf("invalid user ID")
 	}
-	user, err := s.userRepo.FindByID(id)
+	user, err := s.userRepo.FindByID(&id)
 	if err != nil {
 		return nil, fmt.Errorf("error finding user by ID: %w", err)
 	}
@@ -87,7 +87,7 @@ func (s *UserService) UpdateUser(request dto.UserUpdateRequest, id uint) error {
 		return fmt.Errorf("invalid user ID")
 	}
 
-	existingUser, err := s.userRepo.FindByID(id)
+	existingUser, err := s.userRepo.FindByID(&id)
 	if err != nil {
 		return fmt.Errorf("error finding user by ID: %w", err)
 	}
@@ -120,7 +120,7 @@ func (s *UserService) DeleteUser(id uint) error {
 		return fmt.Errorf("invalid user ID")
 	}
 
-	existingUser, err := s.userRepo.FindByID(id)
+	existingUser, err := s.userRepo.FindByID(&id)
 	if err != nil {
 		return fmt.Errorf("error finding user by ID: %w", err)
 	}
@@ -128,5 +128,5 @@ func (s *UserService) DeleteUser(id uint) error {
 		return fmt.Errorf("user not found", )
 	}
 
-	return s.userRepo.Delete(id)
+	return s.userRepo.Delete(&id)
 }
