@@ -11,18 +11,18 @@ import (
 	"gorm.io/gorm"
 )
 
-//Análogo a uma classe
-type UserService struct {
+// Análogo a uma classe que implementa a interface UserService
+type userService struct {
 	userRepo repository.UserRepository
 }
 
-//Análogo ao construtor
+// Análogo ao construtor
 // NewUserService cria uma nova instância de UserService
-func NewUserService(userRepo repository.UserRepository) *UserService {
-	return &UserService{userRepo: userRepo}
+func NewUserService(userRepo repository.UserRepository) UserService {
+	return &userService{userRepo: userRepo}
 }
 
-func (s *UserService) CreateUser(user dto.UserCreateRequest) error {
+func (s *userService) CreateUser(user dto.UserCreateRequest) error {
 	if user.Email == "" || user.Password == "" {
 		return fmt.Errorf("email and password are required")
 	}
@@ -36,14 +36,14 @@ func (s *UserService) CreateUser(user dto.UserCreateRequest) error {
 	}
 
 	hashedPassword, err := utils.HashPassword(&user.Password)
-	if (err != nil) {
+	if err != nil {
 		return err
 	}
-	
+
 	userEntity := domain.User{
-		Name:     user.Name,
-		Email:    user.Email,
-		Password: hashedPassword,
+		Name:      user.Name,
+		Email:     user.Email,
+		Password:  hashedPassword,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -51,8 +51,7 @@ func (s *UserService) CreateUser(user dto.UserCreateRequest) error {
 	return s.userRepo.Create(&userEntity)
 }
 
-
-func (s *UserService) FindByID(id uint) (*domain.User, error) {
+func (s *userService) FindUserByID(id uint) (*domain.User, error) {
 	if id == 0 {
 		return nil, fmt.Errorf("invalid user ID")
 	}
@@ -66,7 +65,7 @@ func (s *UserService) FindByID(id uint) (*domain.User, error) {
 	return user, nil
 }
 
-func (s *UserService) FindByEmail(email string) (*domain.User, error) {
+func (s *userService) FindUserByEmail(email string) (*domain.User, error) {
 	if email == "" {
 		return nil, fmt.Errorf("email is required")
 	}
@@ -82,7 +81,8 @@ func (s *UserService) FindByEmail(email string) (*domain.User, error) {
 	return user, nil
 }
 
-func (s *UserService) UpdateUser(request dto.UserUpdateRequest, id uint) error {
+// FETCH Update
+func (s *userService) UpdateUser(request dto.UserUpdateRequest, id uint) error {
 	if id == 0 {
 		return fmt.Errorf("invalid user ID")
 	}
@@ -111,11 +111,11 @@ func (s *UserService) UpdateUser(request dto.UserUpdateRequest, id uint) error {
 		}
 		existingUser.Password = hashedPassword
 	}
-	
+
 	return s.userRepo.Update(existingUser)
 }
 
-func (s *UserService) DeleteUser(id uint) error {
+func (s *userService) DeleteUser(id uint) error {
 	if id == 0 {
 		return fmt.Errorf("invalid user ID")
 	}
@@ -125,7 +125,7 @@ func (s *UserService) DeleteUser(id uint) error {
 		return fmt.Errorf("error finding user by ID: %w", err)
 	}
 	if existingUser == nil {
-		return fmt.Errorf("user not found", )
+		return fmt.Errorf("user not found")
 	}
 
 	return s.userRepo.Delete(&id)
