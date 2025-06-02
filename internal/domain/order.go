@@ -7,6 +7,6 @@ type Order struct {
 	UserID     uint        `json:"user_id"`
 	TotalPrice float64     `json:"total_price"`
 	Status     OrderStatus `json:"status"`
-	Items      []OrdemItem `gorm:"foreignKey:OrderID" json:"items"`
+	Items      []OrderItem `gorm:"foreignKey:OrderID" json:"items"`
 	CreatedAt  time.Time   `json:"created_at"`
 }
