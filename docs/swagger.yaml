@@ -1,0 +1,82 @@
+basePath: /api/v1
+definitions:
+  domain.Category:
+    enum:
+    - CLOTHING
+    - ACCESSORIES
+    - PERSONALITY
+    type: string
+    x-enum-varnames:
+    - CategoryClothing
+    - CategoryAcessories
+    - CategoryPersonality
+  dto.ProductCreateRequest:
+    properties:
+      category:
+        allOf:
+        - $ref: '#/definitions/domain.Category'
+        enum:
+        - CLOTHING
+        - ACCESSORIES
+        - PERSONALITY
+      description:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      stock:
+        minimum: 0
+        type: integer
+    required:
+    - category
+    - name
+    - price
+    - stock
+    type: object
+info:
+  contact: {}
+  description: This is a sample e-commerce API for Sisinfo course.
+  termsOfService: http://swagger.io/terms/
+  title: Sisinfo E-commerce API
+  version: "1.0"
+paths:
+  /product:
+    post:
+      consumes:
+      - application/json
+      description: Create a new product with the provided details
+      parameters:
+      - description: Product details
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new product
+      tags:
+      - Products
+swagger: "2.0"
