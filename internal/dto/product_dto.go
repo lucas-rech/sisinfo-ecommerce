@@ -17,5 +17,14 @@ type ProductUpdateRequest struct {
 	Price       *float64         `json:"price"`
 	Stock       *int             `json:"stock"`
 	ImageURL    *string          `json:"image_url"`
-	Category    *domain.Category `json:"category" binding:"oneof=CLOTHING ACCESSORIES PERSONALITY"`
+	Category    *domain.Category `json:"category"`
+}
+
+type ProductResponse struct {
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	Price       float64         `json:"price"`
+	Stock       int             `json:"stock"`
+	ImageURL    string          `json:"image_url"`
+	Category    domain.Category `json:"category" binding:"oneof=CLOTHING ACCESSORIES PERSONALITY"`
 }
