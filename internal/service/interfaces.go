@@ -15,8 +15,8 @@ type UserService interface {
 
 type ProductService interface {
 	CreateProduct(product dto.ProductCreateRequest) error
-	FindProductByID(id uint) (*domain.Product, error)
-	FindAllProducts() ([]domain.Product, error)
+	FindProductByID(id uint) (*dto.ProductResponse, error)
+	FindAllProducts() ([]dto.ProductResponse, error)
 	UpdateProduct(product dto.ProductUpdateRequest, id *uint) error
 	DeleteProduct(id uint) error
 }

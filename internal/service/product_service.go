@@ -37,7 +37,8 @@ func (s *productService) CreateProduct(product dto.ProductCreateRequest) error {
 	return s.productRepo.Create(&productEntity)
 }
 
-func (s *productService) FindProductByID(id uint) (*domain.Product, error) {
+
+func (s *productService) FindProductByID(id uint) (*dto.ProductResponse, error) {
 	if id == 0 {
 		return nil, fmt.Errorf("invalid product ID")
 	}
@@ -50,10 +51,19 @@ func (s *productService) FindProductByID(id uint) (*domain.Product, error) {
 		return nil, fmt.Errorf("product not found")
 	}
 
-	return product, nil
+	productResponse := dto.ProductResponse{
+		Name:        product.Name,
+		Description: product.Description,
+		Price:       product.Price,
+		Stock:       product.Stock,
+		ImageURL:    product.ImageURL,
+		Category:    product.Category,
+	}
+
+	return &productResponse, nil
 }
 
-func (s *productService) FindAllProducts() ([]domain.Product, error) {
+func (s *productService) FindAllProducts() ([]dto.ProductResponse, error) {
 	products, err := s.productRepo.FindAll()
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving products: %w", err)
@@ -62,7 +72,20 @@ func (s *productService) FindAllProducts() ([]domain.Product, error) {
 		return nil, fmt.Errorf("no products found")
 	}
 
-	return products, nil
+	var productResponses []dto.ProductResponse
+	for _, product := range products {
+		productResponse := dto.ProductResponse{
+			Name:        product.Name,
+			Description: product.Description,
+			Price:       product.Price,
+			Stock:       product.Stock,
+			ImageURL:    product.ImageURL,
+			Category:    product.Category,
+		}
+		productResponses = append(productResponses, productResponse)
+	}
+	
+	return productResponses, nil
 }
 
 // FETCH Update
@@ -82,7 +105,7 @@ func (s *productService) UpdateProduct(product dto.ProductUpdateRequest, id *uin
 	if product.Name != nil {
 		existingProduct.Name = *product.Name
 	}
-	if product.Description != nil {
+	if product.Description != nil  {
 		existingProduct.Description = *product.Description
 	}
 	if product.Price != nil {
@@ -95,6 +118,10 @@ func (s *productService) UpdateProduct(product dto.ProductUpdateRequest, id *uin
 		existingProduct.ImageURL = *product.ImageURL
 	}
 	if product.Category != nil {
+		// Verifica se a categoria é válida
+		if *product.Category != domain.CategoryAcessories && *product.Category != domain.CategoryClothing && *product.Category != domain.CategoryPersonality {
+			return fmt.Errorf("invalid category")
+		}
 		existingProduct.Category = *product.Category
 	}
 	existingProduct.UpdatedAt = time.Now()

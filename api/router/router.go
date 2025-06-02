@@ -17,8 +17,14 @@ func SetupRouter(productHandler *handler.ProductHandler) *gin.Engine {
 	v1 := router.Group("/api/v1")
 	{
 	
+		// Rotas de produtos
 		v1.POST("/product", productHandler.CreateProduct)
+		v1.GET("/product/:id", productHandler.FindProductByID)
+		v1.GET("/products", productHandler.FindAllProducts)
+		v1.PATCH("/product/:id", productHandler.UpdateProduct)
+		v1.DELETE("/product/:id", productHandler.DeleteProduct)
+		
 	}
 
-	return router
+	return router																				
 }
