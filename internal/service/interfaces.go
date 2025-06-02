@@ -1,14 +1,13 @@
 package service
 
 import (
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/domain"
 	"github.com/lucas-rech/sisinfo-ecommerce/internal/dto"
 )
 
 type UserService interface {
 	CreateUser(user dto.UserCreateRequest) error
-	FindUserByID(id uint) (*domain.User, error)
-	FindUserByEmail(email string) (*domain.User, error)
+	FindUserByID(id uint) (*dto.UserResponse, error)
+	FindUserByEmail(email string) (*dto.UserResponse, error)
 	UpdateUser(user dto.UserUpdateRequest, id uint) error
 	DeleteUser(id uint) error
 }

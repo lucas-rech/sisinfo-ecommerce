@@ -18,6 +18,7 @@ type Container struct {
 	UserService    service.UserService
 
 	ProductHandler *handler.ProductHandler
+	UserHandler    *handler.UserHandler
 }
 
 func NewContainer() (*Container, error) {
@@ -33,6 +34,7 @@ func NewContainer() (*Container, error) {
 	productService := service.NewProductService(productRepository)
 
 	productHandler := handler.NewProductHandler(productService)
+	userHandler := handler.NewUserHandler(userService)
 
 	return &Container{
 		DB:                db,
@@ -41,6 +43,7 @@ func NewContainer() (*Container, error) {
 		ProductService:    productService,
 		UserService:       userService,
 		ProductHandler:    productHandler,
+		UserHandler:       userHandler,
 	}, nil
 
 }

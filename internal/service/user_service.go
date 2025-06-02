@@ -46,12 +46,13 @@ func (s *userService) CreateUser(user dto.UserCreateRequest) error {
 		Password:  hashedPassword,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
+		Role:      domain.RoleCustomer, // Por padrão, define o papel como cliente
 	}
 
 	return s.userRepo.Create(&userEntity)
 }
 
-func (s *userService) FindUserByID(id uint) (*domain.User, error) {
+func (s *userService) FindUserByID(id uint) (*dto.UserResponse, error) {
 	if id == 0 {
 		return nil, fmt.Errorf("invalid user ID")
 	}
@@ -62,10 +63,16 @@ func (s *userService) FindUserByID(id uint) (*domain.User, error) {
 	if user == nil {
 		return nil, fmt.Errorf("user not found")
 	}
-	return user, nil
+
+	userResponse := dto.UserResponse{
+		Name:  user.Name,
+		Email: user.Email,
+		Role:  string(user.Role),
+	}
+	return &userResponse, nil
 }
 
-func (s *userService) FindUserByEmail(email string) (*domain.User, error) {
+func (s *userService) FindUserByEmail(email string) (*dto.UserResponse, error) {
 	if email == "" {
 		return nil, fmt.Errorf("email is required")
 	}
@@ -78,7 +85,13 @@ func (s *userService) FindUserByEmail(email string) (*domain.User, error) {
 		return nil, fmt.Errorf("user not found")
 	}
 
-	return user, nil
+	userResponse := dto.UserResponse{
+		Name:  user.Name,
+		Email: user.Email,
+		Role:  string(user.Role),
+	}
+
+	return &userResponse, nil
 }
 
 // FETCH Update
@@ -130,3 +143,5 @@ func (s *userService) DeleteUser(id uint) error {
 
 	return s.userRepo.Delete(&id)
 }
+
+

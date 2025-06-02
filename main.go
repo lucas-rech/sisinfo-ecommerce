@@ -37,7 +37,7 @@ func main() {
 	}
 
 
-	r := router.SetupRouter(container.ProductHandler)
+	r := router.SetupRouter(container.ProductHandler, container.UserHandler)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":8080")
 
