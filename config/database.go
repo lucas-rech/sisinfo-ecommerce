@@ -11,9 +11,7 @@ import (
 	"github.com/lucas-rech/sisinfo-ecommerce/internal/domain"
 )
 
-var DB *gorm.DB
-
-func ConnectDatabase() {
+func ConnectDatabase() (*gorm.DB, error) {
 	LoadEnv()
 
 	host := os.Getenv("DB_HOST")
@@ -27,22 +25,22 @@ func ConnectDatabase() {
 	
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Failed to connect to the database:", err)
+		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	DB = db
-	if err := DB.AutoMigrate(
+	if err := db.AutoMigrate(
 		&domain.Cart{},
 		&domain.CartItem{},
 		&domain.Product{},
 		&domain.User{},
 		&domain.Order{},
-		&domain.OrdemItem{},
+		&domain.OrderItem{},
 	
 	); err != nil {
-		log.Fatal("Failed to migrate database schema:", err)
+		return nil, fmt.Errorf("failed to auto migrate database: %w", err)
 	}
 
 	log.Println("Database connection established successfully")
+	return db, nil
 }
 
