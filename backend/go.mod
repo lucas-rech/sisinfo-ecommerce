@@ -1,8 +1,12 @@
-module github.com/lucas-rech/sisinfo-ecommerce
+module github.com/lucas-rech/sisinfo-ecommerce/backend
 
 go 1.24.2
 
-require github.com/gin-gonic/gin v1.10.1
+require (
+	github.com/gin-gonic/gin v1.10.1
+	github.com/lucas-rech/sisinfo-ecommerce v0.0.0-20250602230532-9c1128a733d0
+	github.com/swaggo/swag v1.16.4
+)
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
@@ -14,8 +18,6 @@ require (
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
-	github.com/rogpeppe/go-internal v1.14.1 // indirect
-	github.com/swaggo/swag v1.16.4 // indirect
 	golang.org/x/tools v0.26.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
