@@ -39,7 +39,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 
 	err := h.userService.CreateUser(request)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to create user"})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
