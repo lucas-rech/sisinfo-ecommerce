@@ -42,10 +42,15 @@ func (s *userService) CreateUser(user dto.UserCreateRequest) error {
 
 	userEntity := domain.User{
 		Name:      user.Name,
+		LastName:  user.LastName,
 		Email:     user.Email,
 		Password:  hashedPassword,
+		Phone:     user.Phone,
+		Address:   user.Address,
+		Cart:      nil, // Inicialmente, o carrinho é nil
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
+		Deleted:  false, // Por padrão, o usuário não está deletado
 		Role:      domain.RoleCustomer, // Por padrão, define o papel como cliente
 	}
 
@@ -68,6 +73,8 @@ func (s *userService) FindUserByID(id uint) (*dto.UserResponse, error) {
 		Name:  user.Name,
 		Email: user.Email,
 		Role:  string(user.Role),
+		Phone: user.Phone,
+		Address: user.Address,
 	}
 	return &userResponse, nil
 }
@@ -89,6 +96,8 @@ func (s *userService) FindUserByEmail(email string) (*dto.UserResponse, error) {
 		Name:  user.Name,
 		Email: user.Email,
 		Role:  string(user.Role),
+		Phone: user.Phone,
+		Address: user.Address,
 	}
 
 	return &userResponse, nil
@@ -112,8 +121,25 @@ func (s *userService) UpdateUser(request dto.UserUpdateRequest, id uint) error {
 	if request.Name != nil {
 		existingUser.Name = *request.Name
 	}
+
+	//
 	if request.Email != nil {
+		// Verifica se o email já está em uso por outro usuário
+		existingEmailUser, err := s.userRepo.FindByEmail(*request.Email)
+		if err != nil {
+			return fmt.Errorf("error checking for existing user by email: %w", err)
+		}
+		if existingEmailUser != nil && existingEmailUser.ID != id {
+			return fmt.Errorf("email already in use by another user")
+		}
 		existingUser.Email = *request.Email
+	}
+	
+	if request.Phone != nil {
+		existingUser.Phone = *request.Phone
+	}
+	if request.Address != nil {
+		existingUser.Address = *request.Address
 	}
 
 	// Se a senha for fornecida, atualiza o campo de senha
