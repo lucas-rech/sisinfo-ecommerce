@@ -1,26 +1,33 @@
-package utils
+package middleware
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/dto"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/utils"
 )
 
 
 
-var secretKey = []byte(GetEnv("JWT_SECRET"))
+var secretKey = []byte(utils.GetEnv("JWT_SECRET"))
 
 func GenerateJWT(user dto.UserResponse) (string, error) {
+	hoursToExpire, err := strconv.ParseInt(utils.GetEnv("JWT_EXPIRATION_TIME"), 10, 64)
+	if err != nil {
+		return "", fmt.Errorf("invalid JWT expiration time: %v", err)
+	}
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, 
 	jwt.MapClaims{
 		"username": user.Name,
 		"role":    user.Role,
 		"iat":  time.Now().Unix(),	
-		"eat": time.Now().Add(time.Hour * 24).Unix(),
+		"exp": time.Now().Add(time.Hour * time.Duration(hoursToExpire)).Unix(),
 	})
 
 	tokenString, err := token.SignedString(secretKey)

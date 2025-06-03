@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/handler"
-	"github.com/lucas-rech/sisinfo-ecommerce/backend/utils"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/utils/middleware"
 )
 
 func SetupRouter(productHandler *handler.ProductHandler, userHandler *handler.UserHandler) *gin.Engine {
@@ -21,7 +21,7 @@ func SetupRouter(productHandler *handler.ProductHandler, userHandler *handler.Us
 		admin := v1.Group("/admin")
 		{
 			// Rotas de produtos
-			admin.Use(utils.JWTAuth())
+			admin.Use(middleware.JWTAuth())
 			admin.POST("/product", productHandler.CreateProduct)
 			admin.PATCH("/product/:id", productHandler.UpdateProduct)
 			admin.DELETE("/product/:id", productHandler.DeleteProduct)
@@ -36,7 +36,7 @@ func SetupRouter(productHandler *handler.ProductHandler, userHandler *handler.Us
 
 		consumer := v1.Group("/")
 		{
-			consumer.Use(utils.JWTAuthCustomer())
+			consumer.Use(middleware.JWTAuthCustomer())
 			consumer.GET("/product/:id", productHandler.FindProductByID)
 			consumer.GET("/products", productHandler.FindAllProducts)
 

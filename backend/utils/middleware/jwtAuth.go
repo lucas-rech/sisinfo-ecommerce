@@ -1,4 +1,4 @@
-package utils
+package middleware
 
 import (
 	"net/http"
@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// JWTAuth is a middleware function that checks for a valid JWT token in the request.
 func JWTAuth() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		err := ValidateJWT(context)

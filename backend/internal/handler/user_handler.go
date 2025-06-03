@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/dto"
 	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/service"
-	"github.com/lucas-rech/sisinfo-ecommerce/backend/utils"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/utils/middleware"
 )
 
 type UserHandler struct {
@@ -205,7 +205,7 @@ func (h *UserHandler) Login (c *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateJWT(*userResponse)
+	token, err := middleware.GenerateJWT(*userResponse)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to generate token"})
 		return
