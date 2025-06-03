@@ -20,7 +20,15 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 
 
 func (r *userRepository) Create(user *domain.User) error {
-	return r.db.Create(user).Error
+	if user == nil {
+		return fmt.Errorf("user cannot be nil")
+	}
+
+	if err := r.db.Create(user).Error; err != nil {
+		return fmt.Errorf("error creating user: %w", err)
+	}
+
+	return nil
 }
 
 func (r *userRepository) Delete(id *uint) error {

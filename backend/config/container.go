@@ -13,6 +13,8 @@ type Container struct {
 	DB                *gorm.DB
 	ProductRepository repository.ProductRepository
 	UserRepository    repository.UserRepository
+	CartRepository    repository.CartRepository
+	CartItemRepository repository.CartItemRepository
 
 	ProductService service.ProductService
 	UserService    service.UserService
@@ -28,9 +30,11 @@ func NewContainer() (*Container, error) {
 	}
 
 	userRepository := repository.NewUserRepository(db)
+	cartRepository := repository.NewCartRepository(db)
+	cartItemRepository := repository.NewCartItemRepository(db)
 	productRepository := repository.NewProductRepository(db)
 
-	userService := service.NewUserService(userRepository)
+	userService := service.NewUserService(userRepository, cartRepository)
 	productService := service.NewProductService(productRepository)
 
 	productHandler := handler.NewProductHandler(productService)
@@ -44,6 +48,8 @@ func NewContainer() (*Container, error) {
 		UserService:       userService,
 		ProductHandler:    productHandler,
 		UserHandler:       userHandler,
+		CartRepository:    cartRepository,
+		CartItemRepository: cartItemRepository,
 	}, nil
 
 }

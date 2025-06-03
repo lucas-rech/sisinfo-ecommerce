@@ -14,12 +14,17 @@ import (
 // Análogo a uma classe que implementa a interface UserService
 type userService struct {
 	userRepo repository.UserRepository
+	cartRepo repository.CartRepository
 }
 
 // Análogo ao construtor
 // NewUserService cria uma nova instância de UserService
-func NewUserService(userRepo repository.UserRepository) UserService {
-	return &userService{userRepo: userRepo}
+func NewUserService(userRepo repository.UserRepository, cartRepo repository.CartRepository) UserService {
+	return &userService{
+		userRepo: userRepo,
+		cartRepo: cartRepo,
+		
+	}
 }
 
 func (s *userService) CreateUser(user dto.UserCreateRequest) error {
@@ -47,14 +52,21 @@ func (s *userService) CreateUser(user dto.UserCreateRequest) error {
 		Password:  hashedPassword,
 		Phone:     user.Phone,
 		Address:   user.Address,
-		Cart:      nil, // Inicialmente, o carrinho é nil
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		Deleted:  false, // Por padrão, o usuário não está deletado
 		Role:      domain.RoleCustomer, // Por padrão, define o papel como cliente
 	}
+	if err := s.userRepo.Create(&userEntity); err != nil {
+		return fmt.Errorf("error creating user: %w", err)
+	}
 
-	return s.userRepo.Create(&userEntity)
+	// Cria um carrinho para o usuário recém-criado
+	if err := s.cartRepo.Create(&userEntity.ID); err != nil {
+		return fmt.Errorf("error creating cart for user: %w", err)
+	}
+
+	return nil
 }
 
 func (s *userService) FindUserByID(id uint) (*dto.UserResponse, error) {
