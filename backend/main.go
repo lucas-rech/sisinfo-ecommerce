@@ -3,11 +3,11 @@ package main
 import (
 	"log"
 
-	"github.com/lucas-rech/sisinfo-ecommerce/api/router"
-	"github.com/lucas-rech/sisinfo-ecommerce/config"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/router"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/config"
 
 
-	_ "github.com/lucas-rech/sisinfo-ecommerce/docs" // This line is necessary for go-swagger to generate the docs
+	_ "github.com/lucas-rech/sisinfo-ecommerce/backend/docs" // This line is necessary for go-swagger to generate the docs
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )

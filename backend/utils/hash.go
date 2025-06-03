@@ -19,11 +19,15 @@ func HashPassword(password *string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func CheckPasswordHash(password, hash *string) (bool, error) {
+func CheckPasswordHash(password, hash *string) error {
 	if password == nil || hash == nil || *password == "" || *hash == "" {
-		return false, fmt.Errorf("password and hash cannot be empty")
+		return fmt.Errorf("password and hash cannot be empty")
 	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(*hash), []byte(*password))
-	return err == nil, nil
+	if err != nil {
+		return fmt.Errorf("password does not match hash: %w", err)
+	}
+
+	return nil 
 }

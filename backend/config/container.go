@@ -3,9 +3,9 @@ package config
 import (
 	"fmt"
 
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/handler"
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/repository"
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/service"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/handler"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/repository"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/service"
 	"gorm.io/gorm"
 )
 

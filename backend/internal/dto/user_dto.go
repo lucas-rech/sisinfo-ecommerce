@@ -17,3 +17,8 @@ type UserResponse struct {
 	Name  string `json:"name"`
 	Role  string `json:"role"`
 }
+
+type UserLoginRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}

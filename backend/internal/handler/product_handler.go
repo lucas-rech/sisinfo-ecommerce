@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/dto"
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/service"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/dto"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/service"
 )
 
 type ProductHandler struct {

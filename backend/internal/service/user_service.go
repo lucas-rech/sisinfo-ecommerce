@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/domain"
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/dto"
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/repository"
-	"github.com/lucas-rech/sisinfo-ecommerce/pkg/utils"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/domain"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/dto"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/repository"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/utils"
 	"gorm.io/gorm"
 )
 
@@ -144,4 +144,22 @@ func (s *userService) DeleteUser(id uint) error {
 	return s.userRepo.Delete(&id)
 }
 
+func (s *userService) Login(email, password string) (*dto.UserResponse, error) {
+	user, err := s.userRepo.FindByEmail(email)
+	if err != nil {
+		return nil, fmt.Errorf("error finding user by email: %w", err)
+	}
+	if user == nil {
+		return nil, fmt.Errorf("user not found")
+	}
 
+	if err := utils.CheckPasswordHash(&password, &user.Password); err != nil {
+		return nil, fmt.Errorf("invalid password: %w", err)
+	}
+
+	return &dto.UserResponse{
+		Name:  user.Name,
+		Email: user.Email,
+		Role:  string(user.Role),
+	}, nil
+}

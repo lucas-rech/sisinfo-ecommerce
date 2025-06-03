@@ -3,7 +3,7 @@ package repository
 import (
 	"fmt"
 
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/domain"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/domain"
 	"gorm.io/gorm"
 )
 

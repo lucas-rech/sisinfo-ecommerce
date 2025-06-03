@@ -1,6 +1,6 @@
 package repository
 
-import "github.com/lucas-rech/sisinfo-ecommerce/internal/domain"
+import "github.com/lucas-rech/sisinfo-ecommerce/backend/internal/domain"
 
 type UserRepository interface {
 	Create(user *domain.User) error

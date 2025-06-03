@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/handler"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/handler"
 )
 
 func SetupRouter(productHandler *handler.ProductHandler, userHandler *handler.UserHandler) *gin.Engine {
@@ -30,6 +30,9 @@ func SetupRouter(productHandler *handler.ProductHandler, userHandler *handler.Us
 		v1.GET("/user/email/:email", userHandler.FindByEmail)
 		v1.PATCH("/user/:id", userHandler.UpdateUser)
 		v1.DELETE("/user/:id", userHandler.DeleteUser)
+
+		// Rotas de autenticação
+		v1.POST("/login", userHandler.Login)
 	}
 
 	return router

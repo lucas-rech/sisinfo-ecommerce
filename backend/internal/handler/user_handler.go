@@ -4,8 +4,9 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/dto"
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/service"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/dto"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/service"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/utils"
 )
 
 type UserHandler struct {
@@ -176,6 +177,44 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "User deleted successfully"})
+}
+
+
+
+// @Summary User Login
+// @Description Authenticate a user and return a JWT token
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param user body dto.UserLoginRequest true "User login details"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /login [post]
+func (h *UserHandler) Login (c *gin.Context) {
+	var request dto.UserLoginRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	userResponse, err := h.userService.Login(request.Email, request.Password)
+	if err != nil {
+		c.JSON(401, gin.H{"error": "Invalid email or password"})
+		return
+	}
+
+	token, err := utils.GenerateJWT(*userResponse)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to generate token"})
+		return
+	} 
+
+	c.JSON(200, gin.H{
+		"token": token,
+		"user":  userResponse,
+	})
 }
 
 

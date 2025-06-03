@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/domain"
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/dto"
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/repository"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/domain"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/dto"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/repository"
 )
 
 // Análogo a uma classe que implementa a interface ProductService

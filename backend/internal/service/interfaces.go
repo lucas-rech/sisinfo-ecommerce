@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/dto"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/dto"
 )
 
 type UserService interface {
@@ -10,6 +10,7 @@ type UserService interface {
 	FindUserByEmail(email string) (*dto.UserResponse, error)
 	UpdateUser(user dto.UserUpdateRequest, id uint) error
 	DeleteUser(id uint) error
+	Login(email, password string) (*dto.UserResponse, error)
 }
 
 type ProductService interface {

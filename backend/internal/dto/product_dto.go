@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/lucas-rech/sisinfo-ecommerce/internal/domain"
+import "github.com/lucas-rech/sisinfo-ecommerce/backend/internal/domain"
 
 type ProductCreateRequest struct {
 	Name        string          `json:"name" binding:"required"`

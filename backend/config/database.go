@@ -1,18 +1,19 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
-	"fmt"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"github.com/lucas-rech/sisinfo-ecommerce/internal/domain"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/domain"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/utils"
 )
 
 func ConnectDatabase() (*gorm.DB, error) {
-	LoadEnv()
+	utils.LoadEnv()
 
 	host := os.Getenv("DB_HOST")
 	port := os.Getenv("DB_PORT")
