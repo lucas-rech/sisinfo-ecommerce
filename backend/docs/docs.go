@@ -710,12 +710,21 @@ const docTemplate = `{
         "dto.UserCreateRequest": {
             "type": "object",
             "required": [
+                "address",
                 "email",
+                "last_name",
                 "name",
-                "password"
+                "password",
+                "phone"
             ],
             "properties": {
+                "address": {
+                    "type": "string"
+                },
                 "email": {
+                    "type": "string"
+                },
+                "last_name": {
                     "type": "string"
                 },
                 "name": {
@@ -724,6 +733,9 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "minLength": 6
+                },
+                "phone": {
+                    "type": "string"
                 }
             }
         },
@@ -745,10 +757,16 @@ const docTemplate = `{
         "dto.UserResponse": {
             "type": "object",
             "properties": {
+                "address": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 },
                 "role": {
@@ -759,6 +777,9 @@ const docTemplate = `{
         "dto.UserUpdateRequest": {
             "type": "object",
             "properties": {
+                "address": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -766,6 +787,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 }
             }

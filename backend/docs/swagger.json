@@ -703,12 +703,21 @@
         "dto.UserCreateRequest": {
             "type": "object",
             "required": [
+                "address",
                 "email",
+                "last_name",
                 "name",
-                "password"
+                "password",
+                "phone"
             ],
             "properties": {
+                "address": {
+                    "type": "string"
+                },
                 "email": {
+                    "type": "string"
+                },
+                "last_name": {
                     "type": "string"
                 },
                 "name": {
@@ -717,6 +726,9 @@
                 "password": {
                     "type": "string",
                     "minLength": 6
+                },
+                "phone": {
+                    "type": "string"
                 }
             }
         },
@@ -738,10 +750,16 @@
         "dto.UserResponse": {
             "type": "object",
             "properties": {
+                "address": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 },
                 "role": {
@@ -752,6 +770,9 @@
         "dto.UserUpdateRequest": {
             "type": "object",
             "properties": {
+                "address": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -759,6 +780,9 @@
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 }
             }

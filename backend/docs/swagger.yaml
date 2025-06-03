@@ -73,17 +73,26 @@ definitions:
     type: object
   dto.UserCreateRequest:
     properties:
+      address:
+        type: string
       email:
+        type: string
+      last_name:
         type: string
       name:
         type: string
       password:
         minLength: 6
         type: string
+      phone:
+        type: string
     required:
+    - address
     - email
+    - last_name
     - name
     - password
+    - phone
     type: object
   dto.UserLoginRequest:
     properties:
@@ -97,20 +106,28 @@ definitions:
     type: object
   dto.UserResponse:
     properties:
+      address:
+        type: string
       email:
         type: string
       name:
+        type: string
+      phone:
         type: string
       role:
         type: string
     type: object
   dto.UserUpdateRequest:
     properties:
+      address:
+        type: string
       email:
         type: string
       name:
         type: string
       password:
+        type: string
+      phone:
         type: string
     type: object
 info:
