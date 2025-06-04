@@ -20,9 +20,10 @@ func NewProductHandler(productService service.ProductService) *ProductHandler {
 
 // @Summary Create a new product
 // @Description Create a new product with the provided details
-// @Tags Products
+// @Tags [ADMIN] Products
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param product body dto.ProductCreateRequest true "Product details"
 // @Success 201 {object} map[string]string
 // @Failure 400 {object} map[string]string
@@ -108,9 +109,10 @@ func (h *ProductHandler) FindAllProducts(c *gin.Context) {
 
 // @Summary Update a product
 // @Description Update a product with the provided details
-// @Tags Products
+// @Tags [ADMIN] Products
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Product ID"
 // @Param product body dto.ProductUpdateRequest true "Product details"
 // @Success 200 {object} map[string]string
@@ -152,9 +154,10 @@ func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 
 // @Summary Delete a product
 // @Description Delete a product by its ID
-// @Tags Products
+// @Tags [ADMIN] roducts
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Product ID"
 // @Success 200 {object} map[string]string
 // @Failure 400 {object} map[string]string

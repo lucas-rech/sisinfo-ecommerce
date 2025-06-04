@@ -10,6 +10,38 @@ definitions:
     - CategoryClothing
     - CategoryAcessories
     - CategoryPersonality
+  dto.CartItemCreateRequest:
+    properties:
+      product_id:
+        type: integer
+      quantity:
+        maximum: 10
+        minimum: 1
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
+  dto.CartItemResponse:
+    properties:
+      cart_id:
+        type: integer
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+    type: object
+  dto.CartItemUpdateRequest:
+    properties:
+      product_id:
+        type: integer
+      quantity:
+        maximum: 10
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
   dto.ProductCreateRequest:
     properties:
       category:
@@ -108,6 +140,8 @@ definitions:
     properties:
       address:
         type: string
+      cart_id:
+        type: integer
       email:
         type: string
       name:
@@ -137,6 +171,151 @@ info:
   title: Sisinfo E-commerce API
   version: "1.0"
 paths:
+  /cart/item:
+    patch:
+      consumes:
+      - application/json
+      description: Update the quantity of a product in the user's cart
+      parameters:
+      - description: Cart Item Update Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CartItemUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update an item in the user's cart
+      tags:
+      - Cart Items
+    post:
+      consumes:
+      - application/json
+      description: Add a product to the user's cart with a specified quantity
+      parameters:
+      - description: Cart Item Create Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CartItemCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add an item to the user's cart
+      tags:
+      - Cart Items
+  /cart/item/{item_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a product from user's cart. It uses the product ID to identify
+        which item to remove and assumes the user is authenticated with a valid JWT
+        token.
+      parameters:
+      - description: Product ID to remove from cart
+        in: query
+        name: product_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Remove an item from the user's cart
+      tags:
+      - Cart Items
+  /cart/items:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all items in the user's cart
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.CartItemResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all items in the user's cart
+      tags:
+      - Cart Items
   /login:
     post:
       consumes:
@@ -178,6 +357,42 @@ paths:
       summary: User Login
       tags:
       - Users
+  /login/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the provided details
+      parameters:
+      - description: User details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new user
+      tags:
+      - Users
   /product:
     post:
       consumes:
@@ -211,9 +426,11 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Create a new product
       tags:
-      - Products
+      - '[ADMIN] Products'
   /product/{id}:
     delete:
       consumes:
@@ -252,9 +469,11 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Delete a product
       tags:
-      - Products
+      - '[ADMIN] roducts'
     get:
       consumes:
       - application/json
@@ -336,9 +555,11 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Update a product
       tags:
-      - Products
+      - '[ADMIN] Products'
   /products:
     get:
       consumes:
@@ -368,42 +589,6 @@ paths:
       summary: Find all products
       tags:
       - Products
-  /user:
-    post:
-      consumes:
-      - application/json
-      description: Create a new user with the provided details
-      parameters:
-      - description: User details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UserCreateRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Create a new user
-      tags:
-      - Users
   /user/{id}:
     delete:
       consumes:
@@ -442,9 +627,11 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Delete a user
       tags:
-      - Users
+      - '[ADMIN] Users'
     get:
       consumes:
       - application/json
@@ -480,9 +667,11 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Find a user by ID
       tags:
-      - Users
+      - '[ADMIN] Users'
   /user/email/{email}:
     get:
       consumes:
@@ -519,7 +708,57 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Find a user by email
       tags:
-      - Users
+      - '[ADMIN] Users'
+  /user/update:
+    patch:
+      consumes:
+      - application/json
+      description: Update user details by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User update details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a user
+      tags:
+      - '[ADMIN] Users'
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

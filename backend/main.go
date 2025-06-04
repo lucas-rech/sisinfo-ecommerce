@@ -7,7 +7,7 @@ import (
 	"github.com/lucas-rech/sisinfo-ecommerce/backend/config"
 
 
-	_ "github.com/lucas-rech/sisinfo-ecommerce/backend/docs" // This line is necessary for go-swagger to generate the docs
+	_ "github.com/lucas-rech/sisinfo-ecommerce/backend/docs" 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -17,6 +17,9 @@ import (
 // @description This is a sample e-commerce API for Sisinfo course.
 // @termsOfService http://swagger.io/terms/
 // @basePath /api/v1
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 
 
 func main() {
@@ -37,7 +40,7 @@ func main() {
 	}
 
 
-	r := router.SetupRouter(container.ProductHandler, container.UserHandler)
+	r := router.SetupRouter(container.ProductHandler, container.UserHandler, container.CartItemHandler)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":8080")
 
