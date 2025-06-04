@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/dto"
 	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/service"
-	"github.com/lucas-rech/sisinfo-ecommerce/backend/utils/middleware"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/middleware"
 )
 
 type UserHandler struct {

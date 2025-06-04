@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/handler"
-	"github.com/lucas-rech/sisinfo-ecommerce/backend/utils/middleware"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/middleware"
 )
 
 func SetupRouter(productHandler *handler.ProductHandler, userHandler *handler.UserHandler, cartItemHandler *handler.CartItemHandler) *gin.Engine {
