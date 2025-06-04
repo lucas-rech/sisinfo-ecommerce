@@ -7,7 +7,7 @@ import (
 )
 
 // JWTAuth is a middleware function that checks for a valid JWT token in the request.
-func JWTAuth() gin.HandlerFunc {
+func JWTAuthAdmin() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		err := ValidateJWT(context)
 		if err != nil {
@@ -43,3 +43,4 @@ func JWTAuthCustomer() gin.HandlerFunc {
 		context.Next()
 	}
 }
+

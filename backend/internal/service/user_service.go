@@ -23,7 +23,6 @@ func NewUserService(userRepo repository.UserRepository, cartRepo repository.Cart
 	return &userService{
 		userRepo: userRepo,
 		cartRepo: cartRepo,
-		
 	}
 }
 
@@ -54,7 +53,7 @@ func (s *userService) CreateUser(user dto.UserCreateRequest) error {
 		Address:   user.Address,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		Deleted:  false, // Por padrão, o usuário não está deletado
+		Deleted:   false,               // Por padrão, o usuário não está deletado
 		Role:      domain.RoleCustomer, // Por padrão, define o papel como cliente
 	}
 	if err := s.userRepo.Create(&userEntity); err != nil {
@@ -82,10 +81,10 @@ func (s *userService) FindUserByID(id uint) (*dto.UserResponse, error) {
 	}
 
 	userResponse := dto.UserResponse{
-		Name:  user.Name,
-		Email: user.Email,
-		Role:  string(user.Role),
-		Phone: user.Phone,
+		Name:    user.Name,
+		Email:   user.Email,
+		Role:    string(user.Role),
+		Phone:   user.Phone,
 		Address: user.Address,
 	}
 	return &userResponse, nil
@@ -105,10 +104,10 @@ func (s *userService) FindUserByEmail(email string) (*dto.UserResponse, error) {
 	}
 
 	userResponse := dto.UserResponse{
-		Name:  user.Name,
-		Email: user.Email,
-		Role:  string(user.Role),
-		Phone: user.Phone,
+		Name:    user.Name,
+		Email:   user.Email,
+		Role:    string(user.Role),
+		Phone:   user.Phone,
 		Address: user.Address,
 	}
 
@@ -146,7 +145,7 @@ func (s *userService) UpdateUser(request dto.UserUpdateRequest, id uint) error {
 		}
 		existingUser.Email = *request.Email
 	}
-	
+
 	if request.Phone != nil {
 		existingUser.Phone = *request.Phone
 	}
@@ -191,13 +190,40 @@ func (s *userService) Login(email, password string) (*dto.UserResponse, error) {
 		return nil, fmt.Errorf("user not found")
 	}
 
+	cart, err := s.cartRepo.GetByUserID(user.ID)
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving cart for user: %w", err)
+	}
+	if cart == nil {
+		return nil, fmt.Errorf("cart not found for user")
+	}
+
 	if err := utils.CheckPasswordHash(&password, &user.Password); err != nil {
 		return nil, fmt.Errorf("invalid password: %w", err)
 	}
 
 	return &dto.UserResponse{
-		Name:  user.Name,
-		Email: user.Email,
-		Role:  string(user.Role),
+		Name:    user.Name,
+		Email:   user.Email,
+		Role:    string(user.Role),
+		Phone:   user.Phone,
+		Address: user.Address,
+		CartID:  cart.ID,
 	}, nil
+}
+
+func (s *userService) FindUserIDByEmail(email string) (uint, error) {
+	if email == "" {
+		return 0, fmt.Errorf("email is required")
+	}
+
+	user, err := s.userRepo.FindByEmail(email)
+	if err != nil {
+		return 0, fmt.Errorf("error finding user by email: %w", err)
+	}
+	if user == nil {
+		return 0, fmt.Errorf("user not found")
+	}
+
+	return user.ID, nil
 }

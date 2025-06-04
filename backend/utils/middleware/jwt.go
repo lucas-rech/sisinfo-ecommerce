@@ -12,8 +12,6 @@ import (
 	"github.com/lucas-rech/sisinfo-ecommerce/backend/utils"
 )
 
-
-
 var secretKey = []byte(utils.GetEnv("JWT_SECRET"))
 
 func GenerateJWT(user dto.UserResponse) (string, error) {
@@ -22,13 +20,16 @@ func GenerateJWT(user dto.UserResponse) (string, error) {
 		return "", fmt.Errorf("invalid JWT expiration time: %v", err)
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, 
-	jwt.MapClaims{
-		"username": user.Name,
-		"role":    user.Role,
-		"iat":  time.Now().Unix(),	
-		"exp": time.Now().Add(time.Hour * time.Duration(hoursToExpire)).Unix(),
-	})
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"iss":     "sisinfo-ecommerce",
+			"name":    user.Name,
+			"role":    user.Role,
+			"iat":     time.Now().Unix(),
+			"exp":     time.Now().Add(time.Hour * time.Duration(hoursToExpire)).Unix(),
+			"cart_Id": user.CartID,
+			"email":   user.Email,
+		})
 
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
@@ -59,18 +60,28 @@ func getTokenFromRequest(context *gin.Context) string {
 	return ""
 }
 
-func ValidateJWT (context *gin.Context) error {
-	token, err := getToken(context)
+func ValidateJWT(c *gin.Context) error {
+	token, err := getToken(c)
 	if err != nil {
 		return fmt.Errorf("invalid token: %v", err)
 	}
 
-	_, ok := token.Claims.(jwt.MapClaims)
-	if ok && token.Valid {
-		return nil
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return fmt.Errorf("invalid token claims")
 	}
 
-	return fmt.Errorf("invalid token claims")
+	if cartID, ok := claims["cart_ID"].(float64); ok {
+		c.Set("cart_ID", uint(cartID))
+	}
+	if username, ok := claims["username"].(string); ok {
+		c.Set("username", username)
+	}
+	if role, ok := claims["role"].(string); ok {
+		c.Set("role", role)
+	}
+
+	return nil
 }
 
 func ValidateCustomerRoleJWT(context *gin.Context) error {

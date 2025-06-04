@@ -18,14 +18,16 @@ type UserUpdateRequest struct {
 }
 
 type UserResponse struct {
-	Email string `json:"email"`
-	Name  string `json:"name"`
-	Role  string `json:"role"`
-	Phone string `json:"phone"`
+	Email   string `json:"email"`
+	Name    string `json:"name"`
+	Role    string `json:"role"`
+	Phone   string `json:"phone"`
 	Address string `json:"address"`
+	CartID  uint   `json:"cart_id"`
 }
 
 type UserLoginRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
+
