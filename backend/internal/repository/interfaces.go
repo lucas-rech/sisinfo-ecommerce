@@ -24,6 +24,7 @@ type CartItemRepository interface {
 	RemoveItem(cartID uint, productID uint) error
 	GetItemsByCartID(cartID uint) ([]domain.CartItem, error)
 	GetItemByCartAndProduct(cartID uint, productID uint) (*domain.CartItem, error)
+	GetItemByUserAndProduct(userID uint, productID uint) (*domain.CartItem, error)
 }
 
 type CartRepository interface {
