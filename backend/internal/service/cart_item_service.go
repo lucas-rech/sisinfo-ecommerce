@@ -1,58 +1,73 @@
 package service
 
 import (
+	"errors"
 	"fmt"
+	"time"
 
 	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/domain"
+	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/dto"
 	"github.com/lucas-rech/sisinfo-ecommerce/backend/internal/repository"
+	"gorm.io/gorm"
 )
 
-
-type CartItemService struct {
+type cartItemService struct {
 	cartItemRepo repository.CartItemRepository
+	cartRepo     repository.CartRepository
 }
 
-func NewCartItemService(cartItemRepo repository.CartItemRepository) *CartItemService {
-	return &CartItemService{
+func NewCartItemService(cartItemRepo repository.CartItemRepository, cartRepo repository.CartRepository) CartItemService {
+	return &cartItemService{
 		cartItemRepo: cartItemRepo,
+		cartRepo:     cartRepo,
 	}
 }
 
-func (s *CartItemService) AddItemToCart(cartID uint, productID uint, quantity int) error {
-	if cartID == 0 || productID == 0 || quantity <= 0 {
-		return fmt.Errorf("invalid cart ID, product ID or quantity")
+
+func (s *cartItemService) AddItemToCart(userID uint, productID uint, quantity int) error {
+	if userID == 0 || productID == 0 || quantity <= 0 {
+		return fmt.Errorf("invalid user ID, product ID or quantity")
 	}
 
-	// Busca pelo item no carrinho
-	item, err := s.cartItemRepo.GetItemByCartAndProduct(cartID, productID)
+	// Busca (ou cria) carrinho
+	cart, err := s.cartRepo.GetByUserID(userID)
 	if err != nil {
+		return fmt.Errorf("failed to retrieve cart: %w", err)
+	}
+
+	// Busca item
+	item, err := s.cartItemRepo.GetItemByCartAndProduct(cart.ID, productID)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
 	}
 
-	// Se o item já existe, apenas atualiza a quantidade
+	// Atualiza o item se já existir
 	if item != nil {
 		item.Quantity += quantity
-		return s.cartItemRepo.AddItem(item)
+		return s.cartItemRepo.UpdateItem(item)
 	}
 
 	newItem := &domain.CartItem{
-		CartID:    cartID,
+		CartID:    cart.ID,
 		ProductID: productID,
 		Quantity:  quantity,
+		DateAdded: time.Now(),
 	}
 	return s.cartItemRepo.AddItem(newItem)
 }
 
-func (s *CartItemService) RemoveItemFromCart(cartID uint, productID uint) error {
-	if cartID == 0 || productID == 0 {
+
+func (s *cartItemService) RemoveItemFromCart(request *dto.CartItemDeleteRequest) error {
+	
+	if request == nil || request.CartID == 0 || request.ProductID == 0 {
 		return fmt.Errorf("invalid cart ID or product ID")
 	}
 
-	return s.cartItemRepo.RemoveItem(cartID, productID)
+	return s.cartItemRepo.RemoveItem(request.CartID, request.ProductID)
 }
 
 
-func (s *CartItemService) GetItemsByCartID(cartID uint) ([]domain.CartItem, error) {
+func (s *cartItemService) GetItemsByCartID(cartID uint) ([]dto.CartItemResponse, error) {
 	if cartID == 0 {
 		return nil, fmt.Errorf("invalid cart ID")
 	}
@@ -62,5 +77,39 @@ func (s *CartItemService) GetItemsByCartID(cartID uint) ([]domain.CartItem, erro
 		return nil, err
 	}
 
-	return items, nil
+	dtoItems := make([]dto.CartItemResponse, len(items))
+	for i, item := range items {
+		dtoItems[i] = dto.CartItemResponse{
+			ProductID: item.ProductID,
+			Quantity:  item.Quantity,
+			CartID:    item.CartID,
+		}
+	}
+
+	return dtoItems, nil
+}
+
+
+func (s *cartItemService) UpdateItemInCart(request dto.CartItemUpdateRequest, userID uint) error {
+	if userID == 0 || request.ProductID == 0 {
+		return fmt.Errorf("invalid cart ID, or product ID")
+	}
+
+	item, err := s.cartItemRepo.GetItemByUserAndProduct(userID, request.ProductID)
+	if err != nil {
+		return fmt.Errorf("failed to retrieve item: %w", err)
+	}
+
+	if item == nil {
+		return fmt.Errorf("item not found in cart")
+	}
+
+	item.Quantity = item.Quantity + request.Quantity
+	
+	// Se a quantidade for 0, remove o item 
+	if item.Quantity <= 0 {
+		return s.cartItemRepo.RemoveItem(item.CartID, item.ProductID)
+	}
+
+	return s.cartItemRepo.UpdateItem(item)
 }
