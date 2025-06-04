@@ -10,17 +10,19 @@ import (
 )
 
 type Container struct {
-	DB                *gorm.DB
-	ProductRepository repository.ProductRepository
-	UserRepository    repository.UserRepository
-	CartRepository    repository.CartRepository
+	DB                 *gorm.DB
+	ProductRepository  repository.ProductRepository
+	UserRepository     repository.UserRepository
+	CartRepository     repository.CartRepository
 	CartItemRepository repository.CartItemRepository
 
-	ProductService service.ProductService
-	UserService    service.UserService
+	ProductService  service.ProductService
+	UserService     service.UserService
+	CartItemService service.CartItemService
 
-	ProductHandler *handler.ProductHandler
-	UserHandler    *handler.UserHandler
+	ProductHandler  *handler.ProductHandler
+	UserHandler     *handler.UserHandler
+	CartItemHandler *handler.CartItemHandler
 }
 
 func NewContainer() (*Container, error) {
@@ -36,20 +38,24 @@ func NewContainer() (*Container, error) {
 
 	userService := service.NewUserService(userRepository, cartRepository)
 	productService := service.NewProductService(productRepository)
+	cartItemService := service.NewCartItemService(cartItemRepository, cartRepository)
 
 	productHandler := handler.NewProductHandler(productService)
 	userHandler := handler.NewUserHandler(userService)
+	cartItemHandler := handler.NewCartItemHandler(cartItemService, userService)
 
 	return &Container{
-		DB:                db,
-		ProductRepository: productRepository,
-		UserRepository:    userRepository,
-		ProductService:    productService,
-		UserService:       userService,
-		ProductHandler:    productHandler,
-		UserHandler:       userHandler,
-		CartRepository:    cartRepository,
+		DB:                 db,
+		ProductRepository:  productRepository,
+		UserRepository:     userRepository,
+		ProductService:     productService,
+		CartItemService:    cartItemService,
+		UserService:        userService,
+		ProductHandler:     productHandler,
+		UserHandler:        userHandler,
+		CartRepository:     cartRepository,
 		CartItemRepository: cartItemRepository,
+		CartItemHandler:    cartItemHandler,
 	}, nil
 
 }
