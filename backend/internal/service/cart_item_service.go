@@ -14,15 +14,16 @@ import (
 type cartItemService struct {
 	cartItemRepo repository.CartItemRepository
 	cartRepo     repository.CartRepository
+	productService ProductService
 }
 
-func NewCartItemService(cartItemRepo repository.CartItemRepository, cartRepo repository.CartRepository) CartItemService {
+func NewCartItemService(cartItemRepo repository.CartItemRepository, cartRepo repository.CartRepository, productService ProductService) CartItemService {
 	return &cartItemService{
 		cartItemRepo: cartItemRepo,
 		cartRepo:     cartRepo,
+		productService: productService,
 	}
 }
-
 
 func (s *cartItemService) AddItemToCart(userID uint, productID uint, quantity int) error {
 	if userID == 0 || productID == 0 || quantity <= 0 {
@@ -53,19 +54,31 @@ func (s *cartItemService) AddItemToCart(userID uint, productID uint, quantity in
 		Quantity:  quantity,
 		DateAdded: time.Now(),
 	}
+
+	if err := s.productService.DecreaseProductStock(productID, quantity); err != nil {
+		return fmt.Errorf("failed to decrease product stock: %w", err)
+	}
+
 	return s.cartItemRepo.AddItem(newItem)
 }
 
-
 func (s *cartItemService) RemoveItemFromCart(request *dto.CartItemDeleteRequest) error {
-	
+
 	if request == nil || request.CartID == 0 || request.ProductID == 0 {
 		return fmt.Errorf("invalid cart ID or product ID")
 	}
 
+	item, err := s.cartItemRepo.GetItemByCartAndProduct(request.CartID, request.ProductID)
+	if err != nil {
+		return fmt.Errorf("failed to retrieve item: %w", err)
+	}
+	//Adiciona o estoque do produto novamente
+	if err := s.productService.IncreaseProductStock(request.ProductID, item.Quantity); err != nil {
+		return fmt.Errorf("failed to increase product stock: %w", err)
+	}
+
 	return s.cartItemRepo.RemoveItem(request.CartID, request.ProductID)
 }
-
 
 func (s *cartItemService) GetItemsByCartID(cartID uint) ([]dto.CartItemResponse, error) {
 	if cartID == 0 {
@@ -89,7 +102,6 @@ func (s *cartItemService) GetItemsByCartID(cartID uint) ([]dto.CartItemResponse,
 	return dtoItems, nil
 }
 
-
 func (s *cartItemService) UpdateItemInCart(request dto.CartItemUpdateRequest, userID uint) error {
 	if userID == 0 || request.ProductID == 0 {
 		return fmt.Errorf("invalid cart ID, or product ID")
@@ -104,9 +116,21 @@ func (s *cartItemService) UpdateItemInCart(request dto.CartItemUpdateRequest, us
 		return fmt.Errorf("item not found in cart")
 	}
 
+	if request.Quantity <= 0 {
+		err := s.productService.IncreaseProductStock(request.ProductID, item.Quantity)
+		if err != nil {
+			return fmt.Errorf("failed to increase product stock: %w", err)
+		}
+	} else {
+		err := s.productService.DecreaseProductStock(request.ProductID, request.Quantity)
+		if err != nil {
+			return fmt.Errorf("failed to decrease product stock: %w", err)
+		}
+	}
+
 	item.Quantity = item.Quantity + request.Quantity
-	
-	// Se a quantidade for 0, remove o item 
+
+	// Se a quantidade for 0, remove o item
 	if item.Quantity <= 0 {
 		return s.cartItemRepo.RemoveItem(item.CartID, item.ProductID)
 	}

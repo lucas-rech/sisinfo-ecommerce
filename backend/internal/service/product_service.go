@@ -142,3 +142,45 @@ func (s *productService) DeleteProduct(id uint) error {
 
 	return nil
 }
+
+func (s *productService) IncreaseProductStock(id uint, quantity int) error {
+	if id == 0 || quantity <= 0 {
+		return fmt.Errorf("invalid product ID or quantity")
+	}
+
+	product, err := s.productRepo.FindByID(&id)
+	if err != nil {
+		return fmt.Errorf("error finding product: %w", err)
+	}
+	if product == nil {
+		return fmt.Errorf("product not found")
+	}
+
+	product.Stock += quantity
+	return s.productRepo.Update(product)
+}
+
+func (s *productService) DecreaseProductStock(id uint, quantity int) error {
+	if id == 0 || quantity <= 0 {
+		return fmt.Errorf("invalid product ID or quantity")
+	}
+
+	product, err := s.productRepo.FindByID(&id)
+	if err != nil {
+		return fmt.Errorf("error finding product: %w", err)
+	}
+	if product == nil {
+		return fmt.Errorf("product not found")
+	}
+
+	if product.Stock < quantity {
+		return fmt.Errorf("insufficient stock")
+	}
+	
+	if product.Stock == 0 {
+		return fmt.Errorf("product is out of stock")
+	}
+
+	product.Stock -= quantity
+	return s.productRepo.Update(product)
+}

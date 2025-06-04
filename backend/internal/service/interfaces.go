@@ -20,6 +20,8 @@ type ProductService interface {
 	FindAllProducts() ([]dto.ProductResponse, error)
 	UpdateProduct(product dto.ProductUpdateRequest, id *uint) error
 	DeleteProduct(id uint) error
+	IncreaseProductStock(id uint, quantity int) error
+	DecreaseProductStock(id uint, quantity int) error
 }
 
 type CartItemService interface {

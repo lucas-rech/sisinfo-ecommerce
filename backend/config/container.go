@@ -38,7 +38,7 @@ func NewContainer() (*Container, error) {
 
 	userService := service.NewUserService(userRepository, cartRepository)
 	productService := service.NewProductService(productRepository)
-	cartItemService := service.NewCartItemService(cartItemRepository, cartRepository)
+	cartItemService := service.NewCartItemService(cartItemRepository, cartRepository, productService)
 
 	productHandler := handler.NewProductHandler(productService)
 	userHandler := handler.NewUserHandler(userService)
