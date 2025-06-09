@@ -35,3 +35,19 @@ type CartRepository interface {
 	Delete(id uint) error
 	ClearCart(cartID uint) error
 }
+
+//TODO: Checar se são apenas esses métodos necessários para implementação
+type OrderItemRepository interface {
+	Create(item *domain.OrderItem) error
+	FindByID(id *uint) error
+	FindByOrderID(orderID *uint) error
+	FindByProductID(productID *uint) error
+}
+
+type OrderRepository interface {
+	Create(item *domain.Order) error
+	FindByID(id *uint) (*domain.Order, error)
+	FindByUserID(id *uint) (*domain.Order, error)
+	ChangeStatus(status *domain.OrderStatus) error
+}
+
